@@ -22,13 +22,30 @@ double dist(double x1,double y1,double x2,double y2){
 	printf("%f",sqrt(deltax*deltax+deltay*deltay));
 }
 
+//Mean and deviation
+double mean(const int *v, int n) {
+    double sum = 0.0;
+    int i;
+    for (i = 0; i < n; i++) sum += v[i];
+    return sum / n;
+}
+
+double dev(const int *v, int n) { 
+    double m = mean(v, n);
+    double sum = 0.0;
+    int i;
+    for (i = 0; i < n; i++) sum += (v[i] - m) * (v[i] - m);
+    return sqrt(sum / (n - 1));   
+}
+
 int main(){
 	struct part *p;
 	struct part q;
-	int i,j,k,nsteps=1000,np=0,coll;
-	int l;
+	int i,j,k,l,nsteps=1000,np=0,coll;
 	double r=0.5;
 	p=calloc(nsteps,sizeof(struct part));
+	int npevolution[nsteps];
+	int burnin=nsteps*0.2; 
 
 	for (i=0;i<nsteps;i++){
 		// Creation of a new particle with random position and speed
@@ -78,9 +95,15 @@ int main(){
 		}
 		
 	printf("%i Particles\n",np);
+	if (i>=burnin) npevolution[i-burnin]=np; // We remove the first steps before the number of particles is in equilibrium
 	printf("\n");
 }
-printf("Final number of particles %i",np);
+printf("-------------------------------------------------------\n");
+printf("Final number of particles %i\n",np);
+
+
+printf("The mean is %f \n",mean(npevolution,nsteps-burnin));
+printf("The sample deviation is %f\n",dev(npevolution,nsteps-burnin));
 
 return(0);
 }		
